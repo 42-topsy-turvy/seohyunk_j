@@ -1,4 +1,4 @@
-package baekjoon.java;
+// BOJ 1260 DFS와 BFS
 
 import java.io.*;
 import java.util.*;
@@ -7,62 +7,70 @@ import java.util.*;
 // BFS는 queue로
 
 public class BOJ_1260 {
-    static StringBuilder sb = new StringBuilder();
-    static int[][] arr;
-    static boolean[] visited;
     static int N, M, V;
+    static ArrayList<Integer> [] graph;
+    static boolean[] visited;
     static Queue<Integer> queue = new LinkedList<>();
+    static StringBuilder sb = new StringBuilder();
+
     public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        
+
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
         V = Integer.parseInt(st.nextToken());
 
-        arr = new int[N + 1][N + 1];
-        visited = new boolean[N + 1];
+        graph = new ArrayList[N];
+        visited = new boolean[N];
+
+        for (int i = 0; i < N; i++){
+            graph[i] = new ArrayList<Integer>();
+        }
 
         for (int i = 0; i < M; i++){
             StringTokenizer nodes = new StringTokenizer(br.readLine());
-
             int node1 = Integer.parseInt(nodes.nextToken());
             int node2 = Integer.parseInt(nodes.nextToken());
 
-            arr[node1][node2] = arr[node2][node1] = 1;
+            graph[node1 - 1].add(node2 - 1);
+            graph[node2 - 1].add(node1 - 1);
+        }
+        for (int i = 0; i < N; i++){
+            Collections.sort(graph[i]);
         }
 
-        dfs(V);
+        dfs(V - 1);
         sb.append("\n");
-        
-        visited = new boolean[N + 1];
-        bfs(V);
+        visited = new boolean[N];
+        bfs(V - 1);
+
         System.out.println(sb);
+
+
     }
-    
-    public static void dfs(int start){
+    private static void dfs(int start){
         visited[start] = true;
-        sb.append(start + " ");
-        for (int i = 0; i <= N; i++){
-            if(arr[start][i] == 1 && !visited[i])
-                dfs(i);
+        sb.append(start+1 + " ");
+        for (int next_node: graph[start]){
+            if (!visited[next_node])
+                dfs(next_node);
         }
-
     }
 
-    public static void bfs(int start){
+    private static void bfs(int start){
         queue.add(start);
         visited[start] = true;
         while(!queue.isEmpty()){
             start = queue.poll();
-            sb.append(start + " ");
-            for (int i = 0; i <= N; i++){
-                if(arr[start][i] == 1 && !visited[i]){
-                    queue.add(i);
-                    visited[i] = true;
+            sb.append(start+1 + " ");
+            for (int next_node: graph[start]){
+                if (!visited[next_node]){
+                    queue.add(next_node);
+                    visited[next_node] = true;
                 }
             }
         }
-    }
 
+    }
 }
